@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ConditionalValidations.Models;
@@ -74,6 +70,7 @@ namespace ConditionalValidations.Controllers
         [ResponseType(typeof(ConditionalValidation))]
         public IHttpActionResult PostConditionalValidation(ConditionalValidation conditionalValidation)
         {
+            this.Validate(conditionalValidation);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

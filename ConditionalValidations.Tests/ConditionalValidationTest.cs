@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ConditionalValidations.Controllers;
 using ConditionalValidations.Models;
 using Moq;
+using System.Net.Http;
+using System.Web.Http;
 
 namespace ConditionalValidations.Tests
 {
@@ -11,23 +13,38 @@ namespace ConditionalValidations.Tests
     {
         private ConditionalValidationsController conditionalValidationsController = new ConditionalValidationsController();
         private Mock<ConditionalValidationsContext> context = new Mock<ConditionalValidationsContext>();
+        private ConditionalValidation conditionalValidation;
 
-        private ConditionalValidation conditionalValidation = new ConditionalValidation
+        public void InitiateRequiredData()
         {
-            FieldOne = "Field One", FieldTwo = "Field Two",
-            FieldThree = "Field Three", FieldFour = "Field Four",
-            FieldFive = "Field Five", FieldSix = "Field Six",
-            FieldSeven = DateTime.Now, FieldEight = 0
-        };
+            conditionalValidationsController.Request = new HttpRequestMessage();
+            conditionalValidationsController.Request.Properties["MS_HttpConfiguration"] = new HttpConfiguration();
+
+            conditionalValidation = new ConditionalValidation
+            {
+                FieldOne = "Field One",
+                FieldTwo = "Field Two",
+                FieldThree = "Field Three",
+                FieldFour = "Field Four",
+                FieldFive = "Field Five",
+                FieldSix = "Field Six",
+                FieldSeven = DateTime.Now,
+                FieldEight = 0
+            };
+        }
 
         #region Required Validator Test Methods
         [TestMethod]
         public void TestRequiredFieldOne()
         {
+            InitiateRequiredData();
             try
             {
                 conditionalValidation.FieldOne = "";
-                conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+                var response = conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+
+                Assert.IsFalse(conditionalValidationsController.ModelState.IsValid);
+                Assert.IsTrue(conditionalValidationsController.ModelState.Count == 1, "Field One is Required");
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {
@@ -48,6 +65,7 @@ namespace ConditionalValidations.Tests
         [TestMethod]
         public void TestNotRequiredFieldTwoWhenFieldOneIsDelete()
         {
+            InitiateRequiredData();
             conditionalValidation.FieldOne = "Test";
             conditionalValidationsController.PostConditionalValidation(conditionalValidation);
         }
@@ -55,6 +73,7 @@ namespace ConditionalValidations.Tests
         [TestMethod]
         public void TestRequiredFieldTwoWhenFieldOneIsNotTest()
         {
+            InitiateRequiredData();
             conditionalValidation.FieldOne = "Test One";
             
             try
@@ -79,6 +98,7 @@ namespace ConditionalValidations.Tests
         [TestMethod]
         public void TestRequiredFieldFourWhenFieldThreeIsTest()
         {
+            InitiateRequiredData();
             conditionalValidation.FieldThree = "Test";
             try
             {
@@ -99,6 +119,7 @@ namespace ConditionalValidations.Tests
         [TestMethod]
         public void TestNotRequiredFieldFourWhenFieldThreeIsNotTest()
         {
+            InitiateRequiredData();
             try
             {
                 conditionalValidationsController.PostConditionalValidation(conditionalValidation);
@@ -115,6 +136,7 @@ namespace ConditionalValidations.Tests
         [TestMethod]
         public void TestFieldEightRequiredWhenFieldSevenIsNotNull()
         {
+            InitiateRequiredData();
             conditionalValidation.FieldEight = null;
 
             try
@@ -135,7 +157,8 @@ namespace ConditionalValidations.Tests
 
         [TestMethod]
         public void TestFieldEightNotRequiredWhenFieldSevenIsNull()
-        {            
+        {
+            InitiateRequiredData();
             conditionalValidation.FieldSeven = null;
             conditionalValidation.FieldEight = null;
 
@@ -155,6 +178,7 @@ namespace ConditionalValidations.Tests
         [TestMethod]
         public void TestFieldSixRequiredWhenFieldFiveIsNotNull()
         {
+            InitiateRequiredData();
             conditionalValidation.FieldSix = null;
             try
             {
@@ -175,6 +199,7 @@ namespace ConditionalValidations.Tests
         [TestMethod]
         public void TestFieldSixNotRequiredWhenFieldFiveIsNull()
         {
+            InitiateRequiredData();
             conditionalValidation.FieldFive = null;
             conditionalValidation.FieldSix = null;
             
