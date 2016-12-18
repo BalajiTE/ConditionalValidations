@@ -142,6 +142,9 @@ namespace ConditionalValidations.Tests
             try
             {
                 conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+
+                Assert.IsFalse(conditionalValidationsController.ModelState.IsValid);
+                Assert.IsTrue(conditionalValidationsController.ModelState.Count == 1, "Field Eight is Required");
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {
@@ -165,6 +168,8 @@ namespace ConditionalValidations.Tests
             try
             {
                 conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+
+                Assert.IsTrue(conditionalValidationsController.ModelState.IsValid);
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {
@@ -176,13 +181,17 @@ namespace ConditionalValidations.Tests
 
         #region Required If Dep Field is Null Test Methods
         [TestMethod]
-        public void TestFieldSixRequiredWhenFieldFiveIsNotNull()
+        public void TestFieldSixRequiredWhenFieldFiveIsNull()
         {
             InitiateRequiredData();
+            conditionalValidation.FieldFive = null;
             conditionalValidation.FieldSix = null;
             try
             {
-                conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+               var response = conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+
+                Assert.IsFalse(conditionalValidationsController.ModelState.IsValid);
+                Assert.IsTrue(conditionalValidationsController.ModelState.Count == 1, "Field Six is Required");
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {
@@ -197,15 +206,17 @@ namespace ConditionalValidations.Tests
         }
 
         [TestMethod]
-        public void TestFieldSixNotRequiredWhenFieldFiveIsNull()
+        public void TestFieldSixNotRequiredWhenFieldFiveIsNotNull()
         {
             InitiateRequiredData();
-            conditionalValidation.FieldFive = null;
+            //conditionalValidation.FieldFive = null;
             conditionalValidation.FieldSix = null;
             
             try
             {
-                conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+               var response = conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+
+                Assert.IsTrue(conditionalValidationsController.ModelState.IsValid);
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {
