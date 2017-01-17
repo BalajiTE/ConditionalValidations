@@ -29,7 +29,10 @@ namespace ConditionalValidations.Tests
                 FieldFive = "Field Five",
                 FieldSix = "Field Six",
                 FieldSeven = DateTime.Now,
-                FieldEight = 0
+                FieldEight = 0,
+                FieldNine = "Delete",
+                FieldTen = "7326662680",
+                FieldElevan = "7326662680"
             };
         }
 
@@ -226,5 +229,76 @@ namespace ConditionalValidations.Tests
 
         #endregion
 
+        #region Required RegEx If Dep Field is Delete or Null Test Methods
+        [TestMethod]
+        public void TestFieldTenRequiredWhenFieldNineIsDelete()
+        {
+            InitiateRequiredData();
+            conditionalValidation.FieldTen = "732666ABC";
+            try
+            {
+                var response = conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+
+                Assert.IsFalse(conditionalValidationsController.ModelState.IsValid);
+                Assert.IsTrue(conditionalValidationsController.ModelState.Count == 1, "Field Ten Requires Numbers between 1-10");
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
+            {
+            }
+        }
+
+        [TestMethod]
+        public void TestFieldTenNotRequiredWhenFieldNineIsNotDelete()
+        {
+            InitiateRequiredData();
+            conditionalValidation.FieldNine = "Add";
+            conditionalValidation.FieldTen = "732666ABC";
+            try
+            {
+                var response = conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+
+                Assert.IsTrue(conditionalValidationsController.ModelState.IsValid);
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
+            {
+            }
+        }
+        #endregion
+
+        #region Required RegEx If Not Dep Field is Delete or Null Test Methods
+        [TestMethod]
+        public void TestFieldElevanRequiredWhenFieldNineIsDelete()
+        {
+            InitiateRequiredData();
+            conditionalValidation.FieldNine = "Add";
+            conditionalValidation.FieldElevan = "732666ABC";
+            try
+            {
+                var response = conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+
+                Assert.IsFalse(conditionalValidationsController.ModelState.IsValid);
+                Assert.IsTrue(conditionalValidationsController.ModelState.Count == 1, "Field Elevan Requires Numbers between 1-10");
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
+            {
+            }
+        }
+
+        [TestMethod]
+        public void TestFieldElevanNotRequiredWhenFieldNineIsNotDelete()
+        {
+            InitiateRequiredData();            
+            conditionalValidation.FieldElevan = "732666ABC";
+            try
+            {
+                var response = conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+
+                Assert.IsTrue(conditionalValidationsController.ModelState.IsValid);
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
+            {
+            }
+        }
+        #endregion
     }
 }

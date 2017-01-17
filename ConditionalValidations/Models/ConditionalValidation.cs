@@ -38,5 +38,15 @@ namespace ConditionalValidations.Models
         [RequiredIfDepFieldIsNotNullValidator("FieldSeven", ErrorMessage = "Field Eight is Required")]
         public int? FieldEight { get; set; }
         // END: Required If Dep Field Is Not Null validator
+
+        // START: Required RegEx If Dep Field Is Not Null validator
+        public string FieldNine { get; set; }
+                
+        [RequiredIfRegExValidator(@"^\d{10}$", "FieldNine", "Delete", ErrorMessage = "Field Ten Requires Numbers between 1-10")]
+        public string FieldTen { get; set; }
+
+        [RequiredIfNotRegExValidator(@"^\d{10}$", "FieldNine", "Delete", ErrorMessage = "Field Elevan Requires Numbers between 1-10")]
+        public string FieldElevan { get; set; }
+        // END: Required RegEx If Dep Field Is Not Null validator
     }
 }

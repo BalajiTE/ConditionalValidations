@@ -5,13 +5,13 @@ using System.Text.RegularExpressions;
 
 namespace ConditionalValidations.ValidationHelpers
 {
-    public class RequiredRegExValidator : ValidationAttribute
+    public class RequiredIfRegExValidator : ValidationAttribute
     {
         private Regex _regex = null;
         private RequiredAttribute _innerAttribute = new RequiredAttribute();
         public string DependentProperty { get; set; }
         public object TargetValue { get; set; }
-        public RequiredRegExValidator(string regExTypeProperty, string dependentProperty, object targetValue)
+        public RequiredIfRegExValidator(string regExTypeProperty, string dependentProperty, object targetValue)
         {
             _regex = new Regex(regExTypeProperty);
             this.DependentProperty = dependentProperty;
@@ -46,7 +46,7 @@ namespace ConditionalValidations.ValidationHelpers
                 // compare the value against the target value
                 if ((dependentValue == null && TargetValue.Equals("") ||
                     (dependentValue == null && !TargetValue.Equals("") ||
-                    (dependentValue != null && !dependentValue.Equals(this.TargetValue)))))
+                    (dependentValue != null && dependentValue.Equals(this.TargetValue)))))
                 {
                     // match => means we should try validating this field
                     if (_innerAttribute.IsValid(value))
