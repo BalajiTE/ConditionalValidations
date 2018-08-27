@@ -5,6 +5,8 @@ using ConditionalValidations.Models;
 using Moq;
 using System.Net.Http;
 using System.Web.Http;
+using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace ConditionalValidations.Tests
 {
@@ -13,6 +15,7 @@ namespace ConditionalValidations.Tests
     {
         private ConditionalValidationsController conditionalValidationsController = new ConditionalValidationsController();
         private Mock<ConditionalValidationsContext> context = new Mock<ConditionalValidationsContext>();
+        private readonly List<ValidationResult> _validationResults = new List<ValidationResult>();
         private ConditionalValidation conditionalValidation;
 
         public void InitiateRequiredData()
@@ -32,7 +35,9 @@ namespace ConditionalValidations.Tests
                 FieldEight = 0,
                 FieldNine = "Delete",
                 FieldTen = "7326662680",
-                FieldElevan = "7326662680"
+                FieldElevan = "7326662680",
+                FieldTwelve = "Test@gmail.com",
+                FieldThirteen = "1111111111"
             };
         }
 
@@ -300,5 +305,34 @@ namespace ConditionalValidations.Tests
             }
         }
         #endregion
+
+        #region RequiredEither Test Methods
+        [TestMethod]
+        public void FailedFieldThirteenOrFieldTwelveTest()
+        {
+            InitiateRequiredData();
+
+            conditionalValidation.FieldThirteen = null;
+            conditionalValidation.FieldTwelve = null;
+
+            try
+            {
+                var response = conditionalValidationsController.PostConditionalValidation(conditionalValidation);
+
+                Assert.IsFalse(conditionalValidationsController.ModelState.IsValid);
+                Assert.IsTrue(conditionalValidationsController.ModelState.Count == 1, "Either FieldTwelve or FieldThirteen Data is Required");
+            }
+            catch(System.Data.Entity.Validation.DbEntityValidationException dbEx)
+            {
+                foreach (var validationErrors in dbEx.EntityValidationErrors)
+                {
+                    foreach (var validationError in validationErrors.ValidationErrors)
+                    {
+                        Assert.AreEqual("Either FieldTwelve or FieldThirteen Data is Required", validationError.ErrorMessage);
+                    }
+                }
+            }
+        }
+        #endregion  
     }
 }

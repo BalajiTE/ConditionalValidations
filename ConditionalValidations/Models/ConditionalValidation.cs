@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ConditionalValidations.Models
 {
+    [RequriedEitherValidator("FieldTwelve", "FieldThirteen", ErrorMessage = "Either FieldTwelve or FieldThirteen Data is Required")]
     public class ConditionalValidation
     {
         public int ConditionalValidationId { get; set; }
@@ -48,5 +49,14 @@ namespace ConditionalValidations.Models
         [RequiredIfNotRegExValidator(@"^\d{10}$", "FieldNine", "Delete", ErrorMessage = "Field Elevan Requires Numbers between 1-10")]
         public string FieldElevan { get; set; }
         // END: Required RegEx If Dep Field Is Not Null validator
+
+        // START: Required Either Field validator
+        [StringLength(150)]
+        [RegularExpression("^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$", ErrorMessage = "Invalid Email address")]
+        public string FieldTwelve { get; set; }
+
+        [RegularExpression(@"^([0-9]{10})$", ErrorMessage = "Invalid Phone Number")]
+        public string FieldThirteen { get; set; }
+        // END: Required Either Field validator
     }
 }

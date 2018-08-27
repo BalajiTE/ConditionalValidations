@@ -175,6 +175,7 @@
     <Compile Include="ValidationHelpers\RequiredIfNotValidator.cs" />
     <Compile Include="ValidationHelpers\RequiredIfValidator.cs" />
     <Compile Include="ValidationHelpers\RequiredIfRegExValidator.cs" />
+    <Compile Include="ValidationHelpers\RequriedEitherValidator.cs" />
     <Compile Include="ValidationHelpers\ValidationFilterAtttibute.cs" />
   </ItemGroup>
   <ItemGroup>
